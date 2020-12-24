@@ -4,6 +4,7 @@ from getpass import getpass
 import re
 from utilities import getInputStr
 from utilities import getNewPassword
+from rich_config import console
 
 
 FNAME_LENGTH=30
@@ -47,7 +48,7 @@ def signUp():
         "password": password}
         )
     if itemid !=None:
-        print("Account successfully created!")
+        console.print("Account successfully created!", style="success")
 
 
 
@@ -62,9 +63,9 @@ def login():
         USER_VERIFIED=True
         global USER_ID
         USER_ID= userId
-        print("Successfully logged in")
+        console.print("Successfully logged in :thumbs_up:", style="success")
     else:
-        print("Login failed")
+        console.print(":cross_mark: Login failed", style="danger")
 
 
 
@@ -74,6 +75,6 @@ def logout():
     """
     global USER_VERIFIED
     USER_VERIFIED=False
-    print("Successfully logged out")
+    console.print("Successfully logged out", style="success")
 
 

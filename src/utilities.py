@@ -1,11 +1,11 @@
 import pyinputplus as pyip
 from getpass import getpass
 import re
-from rich.console import Console
+from rich_config import console
 from rich.table import Table
+from rich import print
+from rich.padding import Padding
 
-
-CONSOLE = Console()
 
 # Get input and validate against length and regex
 def getInputStr (prompt:str, maxlength:int=None, regex:list=None)-> str:
@@ -20,6 +20,7 @@ def getInputStr (prompt:str, maxlength:int=None, regex:list=None)-> str:
     else:
         text = pyip.inputStr(prompt=prompt)
     return text
+
 
 
 # Get new password
@@ -61,6 +62,7 @@ def getNewPassword(regex="[a-zA-Z0-9!@#$%^&*]", minchar=6, maxchar=72):
 
 
 
+
 def getMenuSelection(menu: dict)->int:
     """
     Gets user selection of menu item.
@@ -77,16 +79,16 @@ def getMenuSelection(menu: dict)->int:
     validSelection= False
     selections= menu.keys()
     selection=None
+    __displayMenu(menu)
     while not validSelection:
-        __displayMenu(menu)
         try:
             selection = int(input("Enter your selection >> "))
             if selection not in selections:
-                print("Invalid selection")
+                console.print(":cross_mark: Invalid selection", style="danger")
             else:
                 validSelection=True
         except ValueError as err:
-            print("Invalid selection")
+            console.print(":cross_mark: Invalid selection", style="danger")
     return selection
 
 
@@ -105,17 +107,18 @@ def getListSelection(items: list)->int:
         __displayList(items)
         selection= int(input("Enter your selection >> "))
         if selection<1 and selection > len(items):
-            CONSOLE.print("Invalid selection\n", style="bold red")
+            console.print(":cross_mark: Invalid selection", style="danger")
         else:
             validSelection=True
     return selection
 
 
 
-def __displayMenu(menu):
-    print("Select from below menu: ")
+def __displayMenu(menu: dict):
+    console.print("[AVAILABLE COMMANDS] >> ", style= "bold white on green ", end="\t")
     for key in menu:
-        print(menu[key])
+        console.print(menu[key], style="bold blue underline", end="\t")
+    print("",end="\n")
 
 
 def __displayList(items):
@@ -151,9 +154,9 @@ def getInputInt(prompt: str=None, acceptedValue: list=None):
                     validSelection = True
                     break
             except ValueError as err:
-                print("Invalid selection")
+                console.print("Invalid selection\n", style="bold red")
             else:
-                print ("Invalid selection")
+                console.print("Invalid selection\n", style="bold red")
     return selection
 
     
@@ -176,8 +179,6 @@ def displayAsTable(data: dict, title: str="Sample Table",columnStyle: dict=None,
             style: (color, bold)
             no_wrap: True/False
 
-
-        
     """
     table = Table(title = title)
     columns = data[0].keys()
@@ -185,11 +186,12 @@ def displayAsTable(data: dict, title: str="Sample Table",columnStyle: dict=None,
         if columnStyle != None:
             style = columnStyle[column]
             table = addTableColumnHeading(table, column, style)
-
+        else:
+            table = addTableColumnHeading(table, column)
     for item in data:
         row =[str (elem) for elem in list(item.values())] 
         table.add_row(*row)
-    CONSOLE.print(table)
+    console.print(table)
 
 
 def displayAccountDetails(accounts: [dict])->None:
@@ -219,8 +221,7 @@ def displayAccountDetails(accounts: [dict])->None:
         # take each value and convert it to string and put it in the list
         row = [str (elem) for elem in list(account.values())]
         table.add_row(*row)
-    CONSOLE.print(table)
-
+    console.print(table)
 
 
 
